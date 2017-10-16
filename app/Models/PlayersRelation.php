@@ -8,24 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 class PlayersRelation extends Model
 {
     /**
-     * @var bool
+     * @var array
      */
-    public $timestamps = false;
+    protected $guarded = [];
 
     /**
      * Get the virtual player record associated with the relation.
      */
-    public function getVirtual()
+    public function getSoccerlife()
     {
-        return $this->belongsTo('App\Models\VirtualPlayer', 'virtual_player_id');
+        return $this->belongsTo('App\Models\SoccerlifePlayerOnTR', 'sl_player_id');
     }
 
     /**
      * Get the real player record associated with the relation.
      */
-    public function getReal()
+    public function getTransfermarkt()
     {
-        return $this->belongsTo('App\Models\RealPlayer', 'real_player_id');
+        return $this->belongsTo('App\Models\TransfermarktPlayer', 'tr_player_id');
     }
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Jobs\ParsePlayerOnTransfer;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,17 +12,30 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::resource('/league', 'LeagueController');
 
-Route::get('/real', 'RealPlayerParserController@parse');
-
-Route::get('/virtual', 'VirtualPlayerController@parse');
-
-Route::get('/perspective', 'PlayerRelationController@show');
-
-Route::get('parseTM/{id}', 'ParseTransfermarktController@parse');
-
-Route::get('/', function (){
+Route::get('/', function () {
     return view('welcome');
 });
+
+//Route::get('/soccer', 'SoccerlifeController@parse');
+
+Route::get('/parseOnTransfer', function () {
+    ParsePlayerOnTransfer::dispatch();
+});
+
+Route::resource('/league', 'LeagueController');
+
+
+Route::get('/test', 'TestController@test');
+
+
+//Route::get('/real', 'RealPlayerParserController@parse');
+//
+//Route::get('/virtual', 'VirtualPlayerController@parse');
+//
+Route::get('/perspective', 'PlayerRelationController@show');
+
+Route::get('/delete_rel/{id}', 'PlayerRelationController@checked');
+//
+//Route::get('parseTM/{id}', 'ParseTransfermarktController@parse');
 

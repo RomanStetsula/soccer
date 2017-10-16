@@ -57,8 +57,8 @@ class FindPerspectivesPlayers extends Command
                     $this->filterPlayers($real_player, $virtual_player))
                 {
                     $player_relation = new PlayersRelation();
-                    $player_relation->real_player_id = $real_player->id;
-                    $player_relation->virtual_player_id = $virtual_player->id;
+                    $player_relation->tr_player_id = $real_player->id;
+                    $player_relation->sl_player_id = $virtual_player->id;
                     $player_relation->save();
                 }
             }

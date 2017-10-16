@@ -15,10 +15,12 @@ class AddTablePlayersRelations extends Migration
     {
         Schema::create('players_relations', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('real_player_id')->unsigned();
-            $table->integer('virtual_player_id')->unsigned();
-            $table->foreign('real_player_id')->references('id')->on('real_players');
-            $table->foreign('virtual_player_id')->references('id')->on('virtual_players');
+            $table->integer('tr_player_id')->unsigned();
+            $table->integer('sl_player_id')->unsigned();
+            $table->tinyInteger('checked')->unsigned()->nullable();
+            $table->foreign('tr_player_id')->references('id')->on('transfermarkt_players');
+            $table->foreign('sl_player_id')->references('id')->on('soccerlife_players_on_tr');
+            $table->timestamps();
         });
     }
 
