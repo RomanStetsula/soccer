@@ -36,6 +36,6 @@ class AddVirtualPlayerTable extends Migration
      */
     public function down()
     {
-        Schema::drop('real_players');
+        Schema::drop('virtual_players');
     }
 }

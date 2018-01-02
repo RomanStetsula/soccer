@@ -17,9 +17,9 @@ class CreateLeagueTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('country');
-            $table->tinyInteger('tier')->unsigned();
-            $table->tinyInteger('base_talent')->unsigned();
-            $table->string('url')->nullable();
+            $table->tinyInteger('tier')->unsigned()->nullable();
+            $table->tinyInteger('base_talent')->unsigned()->nullable();
+            $table->string('url');
             $table->date('date_of_parsing')->nullable();
         });
     }

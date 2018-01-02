@@ -6,12 +6,13 @@ use Illuminate\Console\Command;
 use App\Models\League;
 use App\Models\TransfermarktPlayer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ParseTransfermartk extends Command
 {
     /**
      * The name and signature of the console command.
-     *kkkjjkhk
+     *
      * @var string
      */
     protected $signature = 'parse:transfermarkt';
@@ -58,6 +59,7 @@ class ParseTransfermartk extends Command
      */
     public function handle()
     {
+        //get leagues to parse
         $leagues_to_parse = League::where('date_of_parsing', '<', Carbon::now()->subDays(30))
             ->orWhere('date_of_parsing', null)
             ->get();
@@ -66,13 +68,19 @@ class ParseTransfermartk extends Command
 
             $this->talent = $league->base_talent;
 
+            //get all league teams
             $team_squad_urls = $this->getTeamSquatLinks($league->url);
 
             foreach($team_squad_urls as $url){
 
+                //get team squad page
                 $team_squad_page = $this->getUrlParse($url);
                 
-                //players url on site
+                //players url on TM site 
+                if(!$team_squad_page){
+                    continue;
+                }
+                //get player links
                 $player_links = $this->getPlayerLink($team_squad_page);
 
                 $team_name = trim($team_squad_page->find($this->team_name_tag)[0]->plaintext);
@@ -83,17 +91,20 @@ class ParseTransfermartk extends Command
                     return $item->url;
                 });
 
-                $player_links_to_parse = collect($player_links)->diff($parsed_team_players_urls)->all();
-                
+                //for decamp players
                 if($parsed_team_players_urls->isNotEmpty()){
 
                     $decamp_players = $parsed_team_players_urls->diff($player_links)->all();
-                    
+
                     $this->setTalentToOne($decamp_players);
                 }
-
+                
+                //for new players
+                $player_links_to_parse = collect($player_links)->diff($parsed_team_players_urls)->all();
+                
                 $this->team_name = $team_name;
 
+                //parse player
                 $this->getAndSavePlayer($player_links_to_parse);
             }
 
@@ -112,7 +123,6 @@ class ParseTransfermartk extends Command
      */
     private function getUrlParse($url)
     {
-
         require_once('SimpleHtmlDom.php');
 
         $urlParse = file_get_html($url);
@@ -134,7 +144,6 @@ class ParseTransfermartk extends Command
     //get links of team roster
     private function getTeamSquatLinks($url)
     {
-
         $page_content = $this->getUrlParse($url);
 
         $team_squad_links = $page_content->find($this->team_squad_tag);
@@ -155,7 +164,6 @@ class ParseTransfermartk extends Command
      */
     private function getPlayerLink($team_squad_page)
     {
-
         $player_links = $team_squad_page->find($this->player_url_tag); //$this->player_url_tag
 
         $player_links = array_unique(collect($player_links)->map(function ($player) {
@@ -171,9 +179,13 @@ class ParseTransfermartk extends Command
     private function getAndSavePlayer($players_url)
     {
         foreach($players_url as $url){
-//            dd($url);
-            $player_page = $this->getUrlParse($url);
 
+            $player_page = $this->getUrlParse($url);
+            
+            Log::info('Player page: '.$url); ////
+            if(!$player_page){
+                continue;
+            }
             //player name
             $player_name = $player_page->find($this->player_name_tag);
             if(array_key_exists(0, $player_name)){
@@ -195,7 +207,11 @@ class ParseTransfermartk extends Command
                 $birth_date = explode('/', $birth_date[0]->attr['href']);
                 if (is_array($birth_date) && preg_match('/\d\d\d\d-\d\d-\d\d/', end($birth_date))) {
                     $player['birth_date'] = end($birth_date);
+                } else {
+                     continue;
                 }
+            } else {
+                continue;
             }
 
             foreach($player_data as $data){
@@ -233,7 +249,7 @@ class ParseTransfermartk extends Command
 
             $player['url'] = $url;
 
-            $transfermarktPlayer =  TransfermarktPlayer::updateOrCreate(
+            TransfermarktPlayer::updateOrCreate(
                 ['url' => $url],
                 [
                     'firstname'=>$player['firstname'],
@@ -264,6 +280,7 @@ class ParseTransfermartk extends Command
             $player->team = 'unknown';
             $player->save();
         }
+        
     }
 
 }

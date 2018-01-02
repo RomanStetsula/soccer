@@ -19,7 +19,7 @@ class ParseSoccerlife extends Command
      *
      * @var string
      */
-    protected $description = 'Parsing from sosserlife';
+    protected $description = 'Parsing from soccerlife';
 
     /**
      * Create a new command instance.

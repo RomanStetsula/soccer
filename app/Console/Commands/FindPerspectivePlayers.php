@@ -52,7 +52,7 @@ class FindPerspectivePlayers extends Command
                 foreach ($soccerlife_players as $soccerlife_player)
                 {
                     $tr_players = TransfermarktPlayer::where([
-                            ['nationality', $soccerlife_player->nationality],
+                            ['nationality', 'like', '%'.$soccerlife_player->nationality.'%'],
                             ['birth_date', $soccerlife_player->birth_date],
                             ['talent', '>', $soccerlife_player->talent]
                         ])->get();

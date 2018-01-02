@@ -28,14 +28,14 @@ Route::resource('/league', 'LeagueController');
 
 Route::get('/test', 'TestController@test');
 
+Route::get('/perspective', 'PlayerRelationController@show');
+
+Route::get('/delete_rel/{id}', 'PlayerRelationController@checked');
 
 //Route::get('/real', 'RealPlayerParserController@parse');
 //
 //Route::get('/virtual', 'VirtualPlayerController@parse');
 //
-Route::get('/perspective', 'PlayerRelationController@show');
-
-Route::get('/delete_rel/{id}', 'PlayerRelationController@checked');
 //
 //Route::get('parseTM/{id}', 'ParseTransfermarktController@parse');
 
