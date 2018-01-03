@@ -32,6 +32,8 @@ Route::get('/perspective', 'PlayerRelationController@show');
 
 Route::get('/delete_rel/{id}', 'PlayerRelationController@checked');
 
+Route::get('/show-czech', 'SlPlayersController@show');
+
 //Route::get('/real', 'RealPlayerParserController@parse');
 //
 //Route::get('/virtual', 'VirtualPlayerController@parse');
