@@ -47,31 +47,34 @@ class FindPerspectivePlayers extends Command
      */
     public function handle()
     {
-        SoccerlifePlayerOnTR::where('transfer_date', '>',  Carbon::now()->timezone('Europe/Moscow'))
-            ->chunk(100, function($soccerlife_players) {
-                foreach ($soccerlife_players as $soccerlife_player)
+        $sl_players = SoccerlifePlayerOnTR::where('transfer_date', '>',  Carbon::now()->timezone('Europe/Moscow'))->count();
+
+        $bar = $this->output->createProgressBar($sl_players);
+
+        $tr_players = TransfermarktPlayer::all();
+
+        SoccerlifePlayerOnTR::where('transfer_date', '>',  Carbon::now()->timezone('Europe/Moscow'))->chunk(100, function($soccerlife_players) use ($bar, $tr_players) {
+            foreach ($soccerlife_players as $soccerlife_player)
                 {
-                    $tr_players = TransfermarktPlayer::where([
-                            ['nationality', 'like', '%'.$soccerlife_player->nationality.'%'],
-                            ['birth_date', $soccerlife_player->birth_date],
-                            ['talent', '>', $soccerlife_player->talent]
-                        ])->get();
+                    $foundPlayers = $tr_players->filter(function ($value, $key) use($soccerlife_player) {
+                            return strpos($value['nationality'], $soccerlife_player->nationality) !== false;
+                        })
+                        ->where('talent', '>', $soccerlife_player->talent)
+                        ->where('birth_date', $soccerlife_player->birth_date);
 
-                    foreach ($tr_players as $tr_player){
-                        if($this->filterPlayers($tr_player, $soccerlife_player)){
-
-
-                            PlayersRelation::firstOrCreate(['tr_player_id' => $tr_player->id, 'sl_player_id' => $soccerlife_player->id ]);
-
-    //                        $player_relation = new PlayersRelation();
-    //                        $player_relation->tr_player_id = $tr_player->id;
-    //                        $player_relation->sl_player_id = $soccerlife_player->id;
-    //                        $player_relation->save();
+                    foreach ($foundPlayers as $foundPlayer){
+                        if($this->filterPlayers($foundPlayer , $soccerlife_player)){
+                            PlayersRelation::firstOrCreate(['tr_player_id' => $foundPlayer->id, 'sl_player_id' => $soccerlife_player->id ]);
                         }
                     }
+
+                    $bar->advance();
                 }
             });
-        dd('finish');
+
+        $bar->finish();
+
+        dd('finished');
     }
 
     /**
@@ -108,7 +111,7 @@ class FindPerspectivePlayers extends Command
             }
         }
 
-        return ($i>2)?true:false;
+        return ($i>1)?true:false;
     }
 
     /**

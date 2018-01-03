@@ -67,12 +67,11 @@ class ParsePlayersOntransfer extends Command
 
         $form = $crawler->selectButton('Войти')->form();
 
-        $crawler = $client->submit($form, array('username' => 'wot_t', 'password' => '1989st'));
+        $crawler = $client->submit($form, array('username' => 'rstetsula', 'password' => 'Q13m4qwe'));
 
         $crawler = $client->request('GET', 'http://www.soccerlife.ru/transfers.php');
 
         $pages = trim($crawler->filter($this->transfer_links_tag)->last()->text());
-        dd($pages);
 
         for ($i = 0; $i< $pages; $i++){
 
@@ -132,7 +131,7 @@ class ParsePlayersOntransfer extends Command
     private function getAndSavePlayer($client, $player)
     {
         //wait few seconds before parse player
-        sleep(rand(5, 10)/1.25);
+        sleep(rand(3, 7)/1.18);
         $player_page = $client->request('GET', $player['url']);
 
         // check is player on transfermarket save him or skip
