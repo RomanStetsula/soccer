@@ -11,7 +11,7 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="js/jquery.dataTables.min.js"></script>
-        <script src = "js/ajax.js"></script>
+        <script src = "js/main.js"></script>
         <!-- Fonts -->
 
         <!-- Styles -->
